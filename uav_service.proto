@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package uav;
+
+// 上传无人机状态数据请求
+message UploadStatusRequest {
+  bytes data = 1;           // 字节流数据
+  string uav_id = 2;        // 无人机编号
+}
+
+// 上传无人机状态数据响应
+message UploadStatusResponse {
+  bool success = 1;         // 是否成功
+  string message = 2;       // 响应消息
+}
+
+// 下发无人机安全空间请求
+message SetSafetySpaceRequest {
+  bytes data = 1;           // 字节流数据
+  string uav_id = 2;        // 无人机编号
+}
+
+// 下发无人机安全空间响应
+message SetSafetySpaceResponse {
+  bool success = 1;         // 是否成功
+  string message = 2;       // 响应消息
+}
+
+// 无人机服务定义
+service UavService {
+  // 上传无人机状态数据
+  rpc UploadStatus(UploadStatusRequest) returns (UploadStatusResponse);
+  
+  // 下发无人机安全空间
+  rpc SetSafetySpace(SetSafetySpaceRequest) returns (SetSafetySpaceResponse);
+}
+
