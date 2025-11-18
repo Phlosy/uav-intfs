@@ -22,7 +22,14 @@ all: clean python cpp
 .PHONY: python
 python: clean-python $(PYTHON_OUT_DIR)
 	@echo "正在生成 Python 代码..."
+	@GRPC_PYTHON_PLUGIN=$$(which grpc_python_plugin 2>/dev/null || which grpc_python_plugin.exe 2>/dev/null || echo ""); \
+	if [ -z "$$GRPC_PYTHON_PLUGIN" ]; then \
+		echo "错误: 找不到 grpc_python_plugin，请安装 grpcio-tools: pip install grpcio-tools"; \
+		exit 1; \
+	fi; \
 	$(PROTOC) --python_out=$(PYTHON_OUT_DIR) \
+	          --grpc_python_out=$(PYTHON_OUT_DIR) \
+	          --plugin=protoc-gen-grpc_python=$$GRPC_PYTHON_PLUGIN \
 	          --proto_path=$(PROTO_DIR) \
 	          $(PROTO_FILE)
 	@echo "Python 代码生成完成！输出目录: $(PYTHON_OUT_DIR)"
@@ -32,6 +39,8 @@ python: clean-python $(PYTHON_OUT_DIR)
 cpp: clean-cpp $(CPP_OUT_DIR)
 	@echo "正在生成 C++ 代码..."
 	$(PROTOC) --cpp_out=$(CPP_OUT_DIR) \
+	          --grpc_out=$(CPP_OUT_DIR) \
+	          --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` \
 	          --proto_path=$(PROTO_DIR) \
 	          $(PROTO_FILE)
 	@echo "C++ 代码生成完成！输出目录: $(CPP_OUT_DIR)"
